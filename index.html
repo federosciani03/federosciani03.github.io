@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Federico Rosciani · De la idea a producción</title>
+  <meta name="description" content="Federico Rosciani, AI Engineer en Buenos Aires. Convierto ideas de negocio en aplicaciones con datos e inteligencia artificial, y las llevo hasta producción." />
+  <link rel="canonical" href="https://federicorosciani.github.io/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:type" content="profile" />
+  <meta property="og:site_name" content="Federico Rosciani" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:url" content="https://federicorosciani.github.io/" />
+  <meta property="og:title" content="Federico Rosciani · AI Engineer" />
+  <meta property="og:description" content="De la idea a producción: datos, inteligencia artificial y aplicaciones, de punta a punta." />
+  <meta property="og:image" content="https://federicorosciani.github.io/assets/img/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#08090c" />
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Federico Rosciani",
+      "jobTitle": "AI Engineer",
+      "url": "https://federicorosciani.github.io/",
+      "email": "mailto:federosciani03@gmail.com",
+      "address": { "@type": "PostalAddress", "addressLocality": "Buenos Aires", "addressCountry": "AR" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "UADE" },
+      "knowsAbout": ["AI agents", "LLMs", "RAG", "Azure OpenAI", "Python", "FastAPI", "Databricks", "SQL"],
+      "sameAs": ["https://www.linkedin.com/in/frosciani", "https://github.com/FedericoRosciani"]
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Mrs+Saint+Delafield&display=swap" />
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    /* pantalla de carga (en línea: aparece antes que el CSS y el JS) */
+    html.is-loading, html.is-loading body { overflow: hidden; }
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      display: grid; place-items: center;
+      background: #f2672a; color: #140a04;
+      transition: opacity .7s ease, visibility .7s ease;
+    }
+    #loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    .ld-box { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+    .ld-dot { width: 14px; height: 14px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 0 rgba(20,10,4,.35); animation: ld-pulse 1.4s ease-out infinite; }
+    .ld-bar { width: 148px; height: 2px; border-radius: 2px; background: rgba(20,10,4,.2); overflow: hidden; }
+    .ld-fill { display: block; height: 100%; background: #140a04; transform: scaleX(.04); transform-origin: left; transition: transform .4s ease; }
+    .ld-text { font: 500 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .3em; text-transform: uppercase; color: rgba(20,10,4,.75); }
+    @keyframes ld-pulse { 0% { box-shadow: 0 0 0 0 rgba(20,10,4,.35); } 100% { box-shadow: 0 0 0 22px rgba(20,10,4,0); } }
+    @media (prefers-reduced-motion: reduce) { .ld-dot { animation: none; } }
+  </style>
+  <script>
+    // Siempre arranca arriba: con los pines de la animación, la posición
+    // que restaura el navegador (o un #seccion) cae en cualquier parte.
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (/^#[a-z][\w-]*$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+    document.documentElement.classList.add('is-loading');
+    // idioma guardado o el del navegador (antes del primer pintado)
+    try {
+      var l = localStorage.getItem('fr-lang') || ((navigator.language || 'es').toLowerCase().indexOf('en') === 0 ? 'en' : 'es');
+      document.documentElement.lang = l === 'en' ? 'en' : 'es';
+    } catch (e) {}
+    // red de seguridad: si algo falla, a los 15 s se muestra igual
+    setTimeout(function () {
+      document.documentElement.classList.remove('is-loading');
+      var el = document.getElementById('loader'); if (el) el.className = 'gone';
+    }, 15000);
+  </script>
+</head>
+<body>
+  <a class="skip" href="#proceso" data-i18n="skip">Saltar a cómo trabajo</a>
+
+  <!-- Cursor propio (solo con mouse): punto + aro que dice qué pasa al tocar -->
+  <div class="cursor" aria-hidden="true">
+    <span class="cursor-ring"><span class="cursor-label"></span></span>
+    <span class="cursor-dot"></span>
+  </div>
+
+  <!-- HUD: marcas de cuadro, coordenadas y en qué sección estás -->
+  <div class="hud" aria-hidden="true">
+    <span class="hud-corner hud-tl"></span><span class="hud-corner hud-tr"></span>
+    <span class="hud-corner hud-bl"></span><span class="hud-corner hud-br"></span>
+    <span class="hud-coords" data-i18n="hud.coords">34°36′S · 58°22′O</span>
+    <span class="hud-section"><span class="hud-idx">01</span><span class="hud-total">/08</span><span class="hud-name">Inicio</span></span>
+  </div>
+
+  <!-- El pin de Buenos Aires sobre el globo (lo ubica la escena 3D) -->
+  <div class="pin" id="pin" aria-hidden="true">
+    <span class="pin-dot"></span><span class="pin-line"></span>
+    <span class="pin-label"><b>Buenos Aires</b><span><span data-i18n="pin.coords">34,6°S · 58,4°O</span> — <span data-i18n="pin.here">acá estoy</span></span></span>
+  </div>
+
+  <button class="to-top" type="button" data-i18n-attr="aria-label:nav.top" aria-label="Volver al inicio">
+    <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="ring-bg" cx="22" cy="22" r="20"/><circle class="ring" cx="22" cy="22" r="20"/></svg>
+    <span aria-hidden="true">↑</span>
+  </button>
+
+  <!-- Pantalla de carga -->
+  <div id="loader" role="status" aria-live="polite">
+    <div class="ld-box">
+      <span class="ld-dot" aria-hidden="true"></span>
+      <span class="ld-bar"><span class="ld-fill" id="ld-fill"></span></span>
+      <span class="ld-text"><span id="ld-text">Compilando ideas</span> <span class="ld-pct" id="ld-pct">0%</span></span>
+    </div>
+  </div>
+
+  <!-- La primera pantalla naranja es la chispa vista de cerca: se cierra sobre ella -->
+  <div class="bd-spark" aria-hidden="true"></div>
+
+  <!-- Escena 3D fija detrás de todo -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- Progreso de scroll -->
+  <div class="drip" aria-hidden="true"><div class="drip-fill"></div><div class="drip-drop"></div></div>
+
+  <!-- Guía para scrollear -->
+  <div class="scroll-nudge" id="scroll-nudge" aria-hidden="true">
+    <span class="nudge-ico"><span class="ico-arrow"></span><span class="ico-touch"></span></span>
+    <span class="nudge-text">Seguí deslizando</span>
+    <span class="nudge-arrow">→</span>
+  </div>
+
+  <header class="nav">
+    <a class="brand" href="#top" data-i18n-attr="aria-label:nav.home" aria-label="Federico Rosciani — inicio">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span>Federico Rosciani</span>
+    </a>
+    <nav class="nav-links" data-i18n-attr="aria-label:nav.aria" aria-label="Secciones">
+      <a href="#proceso" data-i18n="nav.process">Proceso</a>
+      <a href="#trayectoria" data-i18n="nav.path">Trayectoria</a>
+      <a href="#stack" data-i18n="nav.stack">Stack</a>
+      <a href="#proyectos" data-i18n="nav.work">Proyectos</a>
+      <a href="#contacto" data-i18n="nav.contact">Contacto</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="lang-btn" type="button" data-lang-toggle aria-label="Switch to English">EN</button>
+      <a class="btn btn-spark btn-sm" href="assets/cv/CV-FedericoRosciani_ES.pdf" download data-i18n-href="cv.href">
+        <span data-i18n="nav.cv">CV</span>
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ========== APERTURA: el naranja era la chispa de una idea ========== -->
+    <section class="marca" id="marca" data-hud="01" data-hud-key="hud.start" data-tone="spark">
+      <div class="marca-stage" data-cursor="scroll">
+        <div class="marca-intro" id="marca-intro">
+          <div class="intro-top">
+            <span class="intro-mono"><b>FR°</b> Portfolio <span data-year>2026</span></span>
+            <span class="intro-tag" data-i18n="intro.kicker">De la idea a producción</span>
+            <span class="intro-lang" role="group" data-i18n-attr="aria-label:intro.langs" aria-label="Idioma">
+              <button type="button" data-set-lang="es" lang="es">ES</button><span aria-hidden="true">/</span><button type="button" data-set-lang="en" lang="en">EN</button>
+            </span>
+          </div>
+          <div class="intro" id="intro">
+            <p class="intro-kicker">AI Engineer · Data Engineer</p>
+            <div class="intro-name">
+              <h1 class="intro-brand"><span class="intro-line">Federico</span> <span class="intro-line">Rosciani</span></h1>
+              <p class="intro-sign" aria-hidden="true">Federico</p>
+            </div>
+            <p class="intro-type"><span class="pr" aria-hidden="true">&gt;</span> <span data-i18n="intro.build">construyo</span> <span class="intro-rot" id="intro-rot">agentes de IA</span><span class="type-caret" aria-hidden="true"></span></p>
+          </div>
+          <div class="intro-ticker" aria-hidden="true">
+            <div class="intro-ticker-inner">
+              <span data-i18n="intro.ticker">Agentes de IA ✦ LLMs ✦ RAG ✦ Azure OpenAI ✦ Python ✦ FastAPI ✦ Databricks ✦ SQL ✦ Entra ID ✦ Kubernetes ✦ </span>
+              <span data-i18n="intro.ticker">Agentes de IA ✦ LLMs ✦ RAG ✦ Azure OpenAI ✦ Python ✦ FastAPI ✦ Databricks ✦ SQL ✦ Entra ID ✦ Kubernetes ✦ </span>
+            </div>
+          </div>
+          <button class="scroll-cue" id="scroll-cue" type="button" data-i18n-attr="aria-label:cue.aria" aria-label="Deslizá para empezar el recorrido">
+            <span class="cue-pill">
+              <span class="nudge-ico cue-ico" aria-hidden="true"><span class="ico-touch"></span></span>
+              <span class="cue-text" data-i18n="cue.text">Deslizá para empezar</span>
+            </span>
+            <span class="cue-chevrons" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+        <div class="mp" id="mp1">
+          <div class="mp-inner">
+            <h2 class="mp-title l-es">
+              <span class="mp-word">Todo</span> <span class="mp-word">empieza</span> <span class="mp-word">con</span> <span class="mp-word">una</span> <span class="mp-word mp-accent">idea.</span>
+            </h2>
+            <h2 class="mp-title l-en" lang="en">
+              <span class="mp-word">It</span> <span class="mp-word">all</span> <span class="mp-word">starts</span> <span class="mp-word">with</span> <span class="mp-word">an</span> <span class="mp-word mp-accent">idea.</span>
+            </h2>
+            <p class="mp-sub" data-i18n="mp.sub">Mi trabajo es que no se quede ahí.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: la idea crece y se vuelve datos ========== -->
+    <section class="hero" id="hero" data-hud="01" data-hud-key="hud.start" data-tone="spark">
+      <div class="hero-stage" data-cursor="drag">
+        <p class="reveal-word" id="rw1" aria-hidden="true" data-i18n="rw1">DATOS</p>
+        <p class="reveal-word" id="rw2" aria-hidden="true">APPS</p>
+        <div class="hero-copy" data-cursor="none">
+          <p class="eyebrow live"><span class="live-dot" aria-hidden="true"></span><span id="greet">Hola</span><span class="sep" aria-hidden="true">·</span><span data-i18n="hero.where">Buenos Aires</span><span class="sep" aria-hidden="true">·</span><time id="clock"><span class="hh">--</span><span class="colon">:</span><span class="mm">--</span></time></p>
+          <h2 class="display"><span class="line" data-i18n="hero.t1">De la idea</span> <span class="line"><span data-i18n="hero.t2">a producción</span><span class="caret" aria-hidden="true"></span></span></h2>
+          <p class="lede" data-i18n="hero.lede">Soy Federico Rosciani, AI Engineer. Convierto ideas de negocio en aplicaciones con datos e inteligencia artificial, y las llevo hasta producción.</p>
+          <p class="lede-note" data-i18n="hero.note">Datos · IA · Aplicaciones</p>
+          <div class="hero-ctas">
+            <a class="btn btn-spark" href="#proceso" data-i18n="hero.cta1">Ver cómo trabajo</a>
+            <a class="btn btn-ghost" href="assets/cv/CV-FedericoRosciani_ES.pdf" download data-i18n-href="cv.href" data-i18n="hero.cta2">Descargar CV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== EL FLUJO: los datos inundan la pantalla ========== -->
+    <section class="zoom" id="zoom" data-hud="02" data-hud-key="hud.formula" data-tone="data">
+      <div class="zoom-stage">
+        <p class="pour-word" id="pour-word" data-i18n="pour.word">Fluyen los datos.</p>
+        <div class="flood" id="flood"><div class="flood-digits" aria-hidden="true"></div></div>
+        <div class="inside" id="inside">
+          <p class="eyebrow" data-i18n="inside.eyebrow">Mi fórmula</p>
+          <h2 class="display-2">Datos + IA + Apps.</h2>
+          <ul class="recipe">
+            <li class="recipe-item">
+              <svg class="recipe-ico" viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><ellipse cx="24" cy="11" rx="14" ry="5"/><path d="M10 11v13c0 2.8 6.3 5 14 5s14-2.2 14-5V11M10 24v13c0 2.8 6.3 5 14 5s14-2.2 14-5V24"/></g></svg>
+              <strong data-i18n="r1.t">Datos</strong><small data-i18n="r1.d">La base: pipelines, SQL y Databricks para que la información sirva.</small>
+            </li>
+            <li class="recipe-item">
+              <svg class="recipe-ico" viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="24" cy="25" r="6.5"/><circle cx="9.5" cy="11" r="3.8"/><circle cx="38.5" cy="11" r="3.8"/><circle cx="24" cy="42" r="3.8"/><path d="M19.4 20.4 12.4 13.6M28.6 20.4l7-6.8M24 31.5v6.7"/></g></svg>
+              <strong data-i18n="r2.t">Inteligencia artificial</strong><small data-i18n="r2.d">Agentes, LLMs y RAG sobre Azure OpenAI.</small>
+            </li>
+            <li class="recipe-item">
+              <svg class="recipe-ico" viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="4" width="20" height="40" rx="4"/><path d="M21 9h6M19 18h10M19 24h6M23 30h6"/></g></svg>
+              <strong data-i18n="r3.t">Aplicaciones</strong><small data-i18n="r3.d">Lo que usa la gente: FastAPI, Azure y pods en producción.</small>
+            </li>
+          </ul>
+          <p class="recipe-badges">
+            <span data-i18n="b1">+35 proyectos en paralelo</span><span data-i18n="b2">Del relevamiento a producción</span><span>Python · FastAPI · SQL</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PROCESO: de la idea a producción, de costado ========== -->
+    <section class="hs" id="proceso" aria-labelledby="hs-title" data-hud="03" data-hud-key="hud.process" data-tone="process">
+      <h2 class="sr-only" id="hs-title" data-i18n="hs.title">Cómo trabajo: de la idea a producción</h2>
+      <div class="hs-progress" id="hs-progress" role="group" data-i18n-attr="aria-label:hs.nav" aria-label="Pasos del proceso">
+        <button class="hs-step on" type="button" data-cursor="go"><span data-i18n="hs.s1">Idea</span></button>
+        <button class="hs-step" type="button" data-cursor="go"><span data-i18n="hs.s2">Datos</span></button>
+        <button class="hs-step" type="button" data-cursor="go"><span>App</span></button>
+        <button class="hs-step" type="button" data-cursor="go"><span data-i18n="hs.s4">Producción</span></button>
+        <span class="hs-bar"><span class="hs-fill"></span></span>
+        <span class="hs-pct" aria-hidden="true">000%</span>
+      </div>
+      <div class="hs-track" id="hs-track">
+        <article class="hs-panel" data-cursor="drag">
+          <p class="hs-word" aria-hidden="true">IDEA</p>
+          <div data-cursor="none" class="panel hs-card hs-card-right">
+            <p class="eyebrow" data-i18n="p1.eyebrow">01 — La idea</p>
+            <h3 class="display-2" data-i18n="p1.title">Todo arranca con un problema real.</h3>
+            <p class="body-copy" data-i18n="p1.body">Me siento con el área de negocio a entender qué necesita antes de escribir una línea de código. Más de 35 proyectos arrancaron así, con una charla.</p>
+            <ul class="facts">
+              <li><span class="fact-num">35+</span><span class="fact-label" data-i18n="p1.f1">proyectos en paralelo</span></li>
+              <li><span class="fact-num" data-i18n="p1.f2n">1°</span><span class="fact-label" data-i18n="p1.f2">paso: escuchar</span></li>
+            </ul>
+            <p class="hs-log"><span class="pr">$</span> git init <span class="str" data-i18n="p1.log">nueva-idea</span></p>
+          </div>
+        </article>
+        <article class="hs-panel" data-cursor="drag">
+          <p class="hs-word hs-word-data" aria-hidden="true" data-i18n="hs.w2">DATOS</p>
+          <div data-cursor="none" class="panel hs-card hs-card-left">
+            <p class="eyebrow" data-i18n="p2.eyebrow">02 — Los datos</p>
+            <h3 class="display-2" data-i18n="p2.title">Los datos ordenan la idea.</h3>
+            <p class="body-copy" data-i18n="p2.body">Vengo de ingeniería de datos: pipelines en Databricks, Python y SQL Server, modelado de información financiera y los KPIs que usa negocio para decidir. Sin datos limpios no hay IA que sirva.</p>
+            <ul class="facts">
+              <li><span class="fact-num">SQL</span><span class="fact-label" data-i18n="p2.f1">avanzado</span></li>
+              <li><span class="fact-num">ETL</span><span class="fact-label" data-i18n="p2.f2">pipelines en Databricks</span></li>
+            </ul>
+            <p class="hs-log"><span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="str" data-i18n="p2.log">datos WHERE sirven = true;</span></p>
+          </div>
+        </article>
+        <article class="hs-panel" data-cursor="drag">
+          <p class="hs-word" aria-hidden="true">APP</p>
+          <div data-cursor="none" class="panel hs-card hs-card-right">
+            <p class="eyebrow" data-i18n="p3.eyebrow">03 — La aplicación</p>
+            <h3 class="display-2" data-i18n="p3.title">La idea toma forma.</h3>
+            <p class="body-copy" data-i18n="p3.body">Agentes de IA, LLMs y RAG sobre Azure OpenAI, con backends en Python y FastAPI. Como el bot de WhatsApp del banco, donde desarrollo nuevas funcionalidades.</p>
+            <ul class="facts">
+              <li><span class="fact-num">LLM</span><span class="fact-label" data-i18n="p3.f1">agentes y RAG</span></li>
+              <li><span class="fact-num">API</span><span class="fact-label" data-i18n="p3.f2">Python y FastAPI</span></li>
+            </ul>
+            <p class="hs-log"><span class="kw">POST</span> /api/chat <span class="ok">→ 200 OK</span></p>
+          </div>
+        </article>
+        <article class="hs-panel" data-cursor="drag">
+          <p class="hs-word hs-word-live" aria-hidden="true">PROD</p>
+          <div data-cursor="none" class="panel hs-card hs-card-left">
+            <p class="eyebrow" data-i18n="p4.eyebrow">04 — Producción</p>
+            <h3 class="display-2" data-i18n="p4.title">Y llega a la gente.</h3>
+            <p class="body-copy" data-i18n="p4.body">Paso cada versión por los ambientes y la dejo corriendo en pods sobre Azure, con identidad y accesos en Entra ID. Recién ahí está terminada.</p>
+            <ul class="facts">
+              <li><span class="fact-num">E2E</span><span class="fact-label" data-i18n="p4.f1">de punta a punta</span></li>
+              <li><span class="fact-num">Azure</span><span class="fact-label" data-i18n="p4.f2">pods y Entra ID</span></li>
+            </ul>
+            <p class="hs-log"><span class="ok">● Running</span> · READY 1/1 · <span data-i18n="p4.log">0 reinicios</span></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== TRAYECTORIA: mi historial de commits ========== -->
+    <section class="gitlog" id="trayectoria" aria-labelledby="git-title" data-hud="04" data-hud-key="hud.path" data-tone="spark">
+      <div class="gitlog-head">
+        <p class="eyebrow" data-i18n="git.eyebrow">Trayectoria</p>
+        <h2 class="display-2" id="git-title" data-i18n="git.title">Mi historial de commits.</h2>
+        <p class="gitlog-cmd"><span>$</span> git log --graph federico/<span data-i18n="git.branch">carrera</span></p>
+      </div>
+      <div class="commits-wrap">
+        <span class="commits-line" aria-hidden="true"><span class="commits-fill"></span><span class="commits-packet"></span></span>
+        <ol class="commits">
+          <li class="commit commit-feat">
+            <div class="commit-meta"><span class="commit-type">feat</span><span class="commit-ref" data-i18n="git.head">HEAD → hoy</span><time data-i18n="c1.date">may 2026 — hoy</time></div>
+            <h3 class="commit-msg">AI Engineer <span>@ Banco Hipotecario</span></h3>
+            <ul class="commit-body">
+              <li data-i18n="c1.b1">Desarrollo aplicaciones de IA de punta a punta: desarrollo local, pasaje entre ambientes y despliegue en pods productivos sobre Azure.</li>
+              <li data-i18n="c1.b2">Creo agentes y soluciones con LLMs que automatizan procesos y reducen costos operativos.</li>
+              <li data-i18n="c1.b3">Gestiono más de 35 proyectos en paralelo, del relevamiento con negocio a la puesta en producción.</li>
+              <li data-i18n="c1.b4">Acompaño a referentes de negocio a construir sus propias aplicaciones de IA.</li>
+              <li data-i18n="c1.b5">Desarrollo nuevas funcionalidades para el bot de WhatsApp del banco y administro identidad y accesos en Entra ID.</li>
+            </ul>
+          </li>
+          <li class="commit commit-feat">
+            <div class="commit-meta"><span class="commit-type">feat</span><time>2025 — 2026</time></div>
+            <h3 class="commit-msg"><span class="msg-main" data-i18n="c2.role">Ingeniero de Datos</span> <span>@ Banco Hipotecario</span></h3>
+            <ul class="commit-body">
+              <li data-i18n="c2.b1">Desarrollé, optimicé y mantuve pipelines de datos en Databricks, Python y SQL Server.</li>
+              <li data-i18n="c2.b2">Modelé información financiera y operativa, y generé métricas, KPIs e indicadores de gestión.</li>
+              <li data-i18n="c2.b3">Automaticé procesos analíticos para mejorar la eficiencia y la calidad de la información.</li>
+            </ul>
+          </li>
+          <li class="commit commit-feat">
+            <div class="commit-meta"><span class="commit-type">feat</span><time>2024 — 2025</time></div>
+            <h3 class="commit-msg"><span class="msg-main" data-i18n="c3.role">Diseño y desarrollo web</span> <span>@ Freelance</span></h3>
+            <ul class="commit-body">
+              <li data-i18n="c3.b1">Sitios profesionales con HTML, CSS y JavaScript, con foco en diseño responsivo y experiencia de usuario.</li>
+              <li><span data-i18n="c3.b2">Clientes:</span> <a href="https://clubdelpicante.vercel.app/" target="_blank" rel="noopener">Club del Picante ↗</a> · <a href="https://agustinabayoni.github.io/Lic.-AgustinaBayoni/" target="_blank" rel="noopener">Lic. Agustina Bayoni ↗</a></li>
+            </ul>
+          </li>
+          <li class="commit commit-edu">
+            <div class="commit-meta"><span class="commit-type">edu</span><time data-i18n="c4.date">2022 — en curso</time></div>
+            <h3 class="commit-msg"><span class="msg-main" data-i18n="c4.title">Lic. en Gestión de Tecnología de la Información</span> <span>@ UADE</span></h3>
+            <ul class="commit-body">
+              <li data-i18n="c4.b1">85% de avance · promedio 7,73.</li>
+            </ul>
+          </li>
+          <li class="commit commit-init">
+            <div class="commit-meta"><span class="commit-type">init</span><time>2017 — 2021</time></div>
+            <h3 class="commit-msg"><span class="msg-main" data-i18n="c5.title">Bachiller en Economía y Administración</span></h3>
+            <ul class="commit-body">
+              <li data-i18n="c5.b1">Donde empezó el interés por los números y los negocios. Idiomas: español nativo, inglés intermedio alto (B2).</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ========== STACK ========== -->
+    <section class="usos" id="stack" aria-labelledby="stack-title" data-hud="05" data-hud-key="hud.stack" data-tone="data">
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-inner">
+          <span>Python · FastAPI · Azure OpenAI · RAG · LangChain · Databricks · PySpark · SQL · Docker · Kubernetes · Entra ID · </span>
+          <span>Python · FastAPI · Azure OpenAI · RAG · LangChain · Databricks · PySpark · SQL · Docker · Kubernetes · Entra ID · </span>
+        </div>
+      </div>
+      <div class="usos-head">
+        <p class="eyebrow" data-i18n="stack.eyebrow">Stack</p>
+        <h2 class="display-2" id="stack-title" data-i18n="stack.title">Lo que uso todos los días.</h2>
+      </div>
+      <div class="stack-grid">
+        <article class="card stack-card stack-card-ai" data-speed="0.92">
+          <p class="stack-count" data-i18n="stack.c1.n">11 herramientas</p>
+          <h3 data-i18n="stack.c1.t">Inteligencia artificial</h3>
+          <ul class="chips"><li data-i18n="sk.agents">Agentes de IA</li><li>LLMs</li><li>Azure OpenAI</li><li>RAG</li><li data-i18n="sk.vector">Bases vectoriales</li><li>Prompt engineering</li><li data-i18n="sk.eval">Evaluación de modelos</li><li>Fine-tuning</li><li>LangChain</li><li>Function calling</li><li>Machine Learning</li></ul>
+        </article>
+        <article class="card stack-card stack-card-data" data-speed="1.06">
+          <p class="stack-count" data-i18n="stack.c4.n">9 herramientas</p>
+          <h3 data-i18n="stack.c4.t">Datos</h3>
+          <ul class="chips"><li data-i18n="sk.sql">SQL avanzado</li><li>SQL Server</li><li>Databricks</li><li>PySpark</li><li>ETL</li><li data-i18n="sk.model">Modelado de datos</li><li>Power BI</li><li>MicroStrategy</li><li data-i18n="sk.excel">Excel avanzado</li></ul>
+        </article>
+        <article class="card stack-card" data-speed="0.96">
+          <p class="stack-count" data-i18n="stack.c3.n">11 herramientas</p>
+          <h3 data-i18n="stack.c3.t">Desarrollo</h3>
+          <ul class="chips"><li>Python</li><li>FastAPI</li><li>REST APIs</li><li>JavaScript</li><li>HTML</li><li>CSS</li><li>Git</li><li>GitHub</li><li>Testing</li><li>Webhooks</li><li data-i18n="sk.arch">Arquitectura de aplicaciones</li></ul>
+        </article>
+        <article class="card stack-card stack-card-live" data-speed="1.04">
+          <p class="stack-count" data-i18n="stack.c2.n">9 herramientas</p>
+          <h3 data-i18n="stack.c2.t">Cloud y plataforma</h3>
+          <ul class="chips"><li>Microsoft Azure</li><li>Entra ID</li><li>App Registrations</li><li>Azure Functions</li><li>Azure DevOps</li><li>Docker</li><li>Kubernetes</li><li>CI/CD</li><li data-i18n="sk.envs">Gestión de ambientes</li></ul>
+        </article>
+        <article class="card stack-card" data-speed="0.94">
+          <p class="stack-count" data-i18n="stack.c5.n">7 herramientas</p>
+          <h3 data-i18n="stack.c5.t">Negocio y gestión</h3>
+          <ul class="chips"><li>Salesforce</li><li>SAP</li><li>Scrum</li><li>Jira</li><li data-i18n="sk.pm">Gestión de proyectos</li><li data-i18n="sk.req">Relevamiento de requerimientos</li><li data-i18n="sk.docs">Documentación técnica</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== PROYECTOS ========== -->
+    <section class="proyectos" id="proyectos" aria-labelledby="work-title" data-hud="06" data-hud-key="hud.work" data-tone="spark">
+      <div class="proyectos-head">
+        <p class="eyebrow" data-i18n="work.eyebrow">Trabajo freelance</p>
+        <h2 class="display-2" id="work-title" data-i18n="work.title">Webs que diseñé y programé.</h2>
+      </div>
+      <article class="feature">
+        <a class="feature-media" href="https://clubdelpicante.vercel.app/" target="_blank" rel="noopener" data-cursor="visit">
+          <span class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span class="browser-url"><span class="lock">●</span>clubdelpicante.vercel.app</span></span>
+          <img src="assets/img/clubdelpicante-web.jpg" width="1440" height="900" alt="Página de inicio de la web de Club del Picante" data-i18n-attr="alt:work.cdp.alt" loading="lazy" decoding="async" />
+        </a>
+        <div class="feature-body">
+          <p class="eyebrow" data-i18n="work.cdp.kind">Marca gastronómica · Tienda online</p>
+          <h3 class="feature-title">Club del Picante</h3>
+          <p class="body-copy" data-i18n="work.cdp.text">La web de una marca de Hot Honey: una botella 3D que acompaña el scroll, tienda con carrito, cuentas y pago con Mercado Pago. De esa experiencia sale esta página.</p>
+          <ul class="tags"><li>Three.js</li><li>GSAP</li><li>Vite</li><li>Mercado Pago</li></ul>
+          <a class="btn btn-ghost" href="https://clubdelpicante.vercel.app/" target="_blank" rel="noopener"><span data-i18n="work.visit">Ver sitio</span> ↗</a>
+        </div>
+      </article>
+      <a class="workrow" href="https://agustinabayoni.github.io/Lic.-AgustinaBayoni/" target="_blank" rel="noopener">
+        <span class="workrow-main">
+          <span class="workrow-kind" data-i18n="work.ab.kind">Consultorio de psicología</span>
+          <span class="workrow-title">Lic. Agustina Bayoni</span>
+        </span>
+        <span class="workrow-text" data-i18n="work.ab.text">Sitio profesional para una psicóloga clínica de niños y adolescentes, con atención presencial y virtual.</span>
+        <span class="workrow-cta"><span data-i18n="work.visit">Ver sitio</span> ↗</span>
+        <img class="workrow-preview" src="assets/img/agustinabayoni-web.jpg" width="1280" height="800" alt="" aria-hidden="true" fetchpriority="low" decoding="async" />
+      </a>
+    </section>
+
+    <!-- ========== RESULTADOS: las cards salen de la nube ========== -->
+    <section class="club" id="club" aria-labelledby="club-title" data-hud="07" data-hud-key="hud.results" data-tone="live">
+      <div class="club-stage">
+        <div class="club-intro" id="club-intro">
+          <p class="eyebrow" data-i18n="club.eyebrow">Resultados</p>
+          <h2 class="display-2" id="club-title" data-i18n="club.title">Lo que ya está en producción.</h2>
+        </div>
+        <div class="club-group" id="club-results">
+          <p class="club-label" data-i18n="club.l1">Hoy, en el banco</p>
+          <div class="club-list">
+            <div class="club-row">
+              <span class="club-ico">35+</span>
+              <span class="club-text"><strong data-i18n="cl1.t">Proyectos en paralelo</strong><small data-i18n="cl1.d">Del relevamiento con negocio a la puesta en producción</small></span>
+            </div>
+            <div class="club-row">
+              <span class="club-ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg></span>
+              <span class="club-text"><strong data-i18n="cl2.t">Bot de WhatsApp del banco</strong><small data-i18n="cl2.d">Nuevas funcionalidades para clientes reales</small></span>
+            </div>
+            <div class="club-row">
+              <span class="club-ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4.5"/><path d="M11.2 11.8 20 3m-3.5 3.5 2.5 2.5m-5-0.5 2 2"/></g></svg></span>
+              <span class="club-text"><strong data-i18n="cl3.t">Identidad y accesos en Entra ID</strong><small data-i18n="cl3.d">App Registrations, permisos y credenciales seguras</small></span>
+            </div>
+            <div class="club-row">
+              <span class="club-ico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.6"/><path d="M17 14.6c2.3.2 4 1.8 4.6 4.6"/></g></svg></span>
+              <span class="club-text"><strong data-i18n="cl4.t">Referentes de negocio</strong><small data-i18n="cl4.d">Los acompaño a construir sus propias apps de IA</small></span>
+            </div>
+          </div>
+        </div>
+        <div class="club-group" id="club-more">
+          <p class="club-label" data-i18n="club.l2">Y también</p>
+          <div class="club-list">
+            <div class="club-row">
+              <span class="club-ico">ETL</span>
+              <span class="club-text"><strong data-i18n="cm1.t">Pipelines y KPIs en Databricks</strong><small data-i18n="cm1.d">Información financiera y operativa para decidir</small></span>
+            </div>
+            <div class="club-row">
+              <span class="club-ico">2</span>
+              <span class="club-text"><strong data-i18n="cm2.t">Webs publicadas para clientes</strong><small>Club del Picante · Lic. Agustina Bayoni</small></span>
+            </div>
+            <div class="club-row">
+              <span class="club-ico">B2</span>
+              <span class="club-text"><strong data-i18n="cm3.t">Español nativo · Inglés intermedio alto</strong><small data-i18n="cm3.d">Idiomas</small></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CONTACTO: la nube forma mis iniciales ========== -->
+    <section class="contacto" id="contacto" aria-labelledby="contact-title" data-hud="08" data-hud-key="hud.contact" data-tone="spark">
+      <div class="contact-content">
+        <p class="eyebrow" data-i18n="contact.eyebrow">Contacto</p>
+        <h2 class="display-2" id="contact-title" data-i18n="contact.title">¿Tenés una idea que tiene que llegar a producción?</h2>
+        <p class="body-copy" data-i18n="contact.body">Si estás armando un equipo o tenés un proyecto donde los datos y la IA tienen que funcionar de verdad, escribime. Respondo por mail, LinkedIn o WhatsApp.</p>
+        <div class="contact-mail">
+          <a class="contact-email" href="mailto:federosciani03@gmail.com">federosciani03@gmail.com</a>
+          <button class="btn btn-ghost btn-sm" type="button" data-copy="federosciani03@gmail.com" data-i18n="contact.copy">Copiar</button>
+        </div>
+        <div class="contact-ctas">
+          <a class="btn btn-spark" href="https://www.linkedin.com/in/frosciani" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a class="btn btn-ghost" href="https://wa.me/5491152601661" target="_blank" rel="noopener">WhatsApp ↗</a>
+          <a class="btn btn-ghost" href="https://github.com/FedericoRosciani" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+        <p class="cv-links">
+          <a href="assets/cv/CV-FedericoRosciani_ES.pdf" download>CV en español ↓</a>
+          <a href="assets/cv/CV-FedericoRosciani_EN.pdf" download lang="en">CV in English ↓</a>
+        </p>
+        <p class="signature" aria-label="Firma: Federico Rosciani" data-cursor="sign">Federico Rosciani</p>
+        <p class="sign-stamp"><span data-i18n="sign.place">Buenos Aires</span>, <time id="sign-date"></time></p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <a class="footer-brand" href="#top" data-i18n-attr="aria-label:nav.top" aria-label="Volver al inicio">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span><strong>Federico Rosciani</strong><span data-i18n="footer.made">Diseñado y programado en Buenos Aires, a base de mate.</span></span>
+      </a>
+      <nav class="footer-links" data-i18n-attr="aria-label:footer.aria" aria-label="Enlaces">
+        <a href="https://www.linkedin.com/in/frosciani" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/FedericoRosciani" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:federosciani03@gmail.com">Mail</a>
+      </nav>
+      <p class="footer-keys" data-i18n-html="footer.keys">Atajos: <kbd>L</kbd> idioma · <kbd>E</kbd> copiar mail</p>
+      <span class="footer-copy">© <span data-year>2026</span> Federico Rosciani · <span data-i18n="footer.updated">actualizado</span> <time id="updated"></time></span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/ScrollTrigger.min.js"></script>
+  <script src="vendor/lenis.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
