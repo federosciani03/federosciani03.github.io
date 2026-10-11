@@ -75,21 +75,27 @@ node tools/serve.js . 5180
 y abrí http://localhost:5180. (Abrir el `index.html` con doble clic no
 alcanza: los módulos de JavaScript necesitan un servidor.)
 
-## Publicarlo en GitHub Pages
+## Dónde está publicado
 
-El sitio vive en el repo **`federosciani03/federosciani03.github.io`** y se ve
-en **https://federosciani03.github.io**. GitHub Pages publica la rama `main`
-desde la raíz: cada `git push` a `main` actualiza el sitio en uno o dos minutos.
-No hace falta ningún GitHub Actions.
+| Dónde | Dirección | Cómo se actualiza |
+|---|---|---|
+| **Vercel (principal)** | **https://federicorosciani.vercel.app** | `node tools/deploy-vercel.mjs deploy` |
+| GitHub Pages (espejo) | https://federosciani03.github.io | `git push` a `main` (repo `federosciani03/federosciani03.github.io`) |
 
-Para actualizarlo después de un cambio:
+La dirección principal es la de Vercel: es la que usan la vista previa al
+compartir el link y los buscadores (`canonical` en `index.html`). Ponela en tu CV.
+
+Para publicar un cambio en los dos lados:
 
 ```bash
 git add -A && git commit -m "Actualizo el sitio" && git push
+node tools/deploy-vercel.mjs deploy
 ```
 
-> Tu CV todavía dice `federicorosciani.github.io`: cambialo por
-> `federosciani03.github.io` para que el link lleve a este sitio.
+El deploy a Vercel va por la API REST (el CLI oficial no anda en la red del
+banco). El token vive en `.vercel-token.json`, que está en `.gitignore` y no se
+publica. Si vence: `node tools/deploy-vercel.mjs login` y confirmás el código
+en Vercel. No hace falta ningún GitHub Actions.
 
 ## Antes de publicar, revisá
 
