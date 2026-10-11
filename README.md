@@ -77,17 +77,19 @@ alcanza: los módulos de JavaScript necesitan un servidor.)
 
 ## Publicarlo en GitHub Pages
 
-La dirección que figura en tu CV es `federicorosciani.github.io`, y hoy da
-**404**. Para que esa dirección muestre este sitio:
+El sitio vive en el repo **`federosciani03/federosciani03.github.io`** y se ve
+en **https://federosciani03.github.io**. GitHub Pages publica la rama `main`
+desde la raíz: cada `git push` a `main` actualiza el sitio en uno o dos minutos.
+No hace falta ningún GitHub Actions.
 
-1. En GitHub, creá un repo **público** llamado exactamente
-   `FedericoRosciani.github.io`.
-2. Subí el contenido de esta carpeta (sin `.claude/`; ya está en `.gitignore`).
-3. En el repo → **Settings → Pages** → *Deploy from a branch* → rama `main`,
-   carpeta `/ (root)`.
-4. En uno o dos minutos queda en https://federicorosciani.github.io
+Para actualizarlo después de un cambio:
 
-No hace falta ningún GitHub Actions: Pages publica la rama directo.
+```bash
+git add -A && git commit -m "Actualizo el sitio" && git push
+```
+
+> Tu CV todavía dice `federicorosciani.github.io`: cambialo por
+> `federosciani03.github.io` para que el link lleve a este sitio.
 
 ## Antes de publicar, revisá
 
