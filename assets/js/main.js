@@ -354,25 +354,34 @@
         }, 0);
       });
       heroTl
-        .fromTo(".portrait img", { clipPath: "circle(0% at 50% 50%)", scale: 1.35 }, { clipPath: "circle(50% at 50% 50%)", scale: 1, duration: 0.36 }, 0.2)
-        .fromTo(".ring circle", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.42 }, 0.24)
+        // The portrait wipes up out of its frame, the photo settles, the glow lights and the tags pop.
+        .fromTo(".portrait-frame", { clipPath: "inset(100% 0% 0% 0% round 28px)", y: 40 }, { clipPath: "inset(0% 0% 0% 0% round 28px)", y: 0, duration: 0.34 }, 0.2)
+        .fromTo(".portrait-frame img", { scale: 1.35 }, { scale: 1, duration: 0.5 }, 0.2)
+        .fromTo(".portrait-glow", { opacity: 0, scale: 0.7 }, { opacity: 0.55, scale: 1, duration: 0.3 }, 0.3)
+        .fromTo(".portrait-tag", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.1, stagger: 0.06, ease: "back.out(2)" }, 0.46)
         .from(".hero-copy", { x: c.narrow ? 0 : 60, y: c.narrow ? 30 : 0, opacity: 0, duration: 0.18 }, 0.36);
       if (has(words)) heroTl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: 0.06, stagger: 0.38 / words.length }, 0.44);
       heroTl.from(".hero-actions", { y: 30, opacity: 0, duration: 0.1 }, 0.86);
 
       /* ---------- SHOWREEL: the frame grows until it fills the screen ---------- */
       var frame = document.querySelector(".reel-frame");
-      var reelTl = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: { trigger: ".reel", start: "top top", end: "+=130%", pin: ".reel-stage", scrub: 0.7, anticipatePin: 1, invalidateOnRefresh: true }
-      });
-      reelTl
-        .fromTo(frame, { scale: 0.62, borderRadius: 40 }, {
-          scale: function () { return Math.max(window.innerWidth / frame.offsetWidth, window.innerHeight / frame.offsetHeight) * 1.001; },
-          borderRadius: 0, duration: 0.7
-        }, 0)
-        .to(".reel-head", { y: -120, opacity: 0, duration: 0.35 }, 0)
-        .to({}, { duration: 0.3 });
+      if (c.narrow) {
+        // Phones: the video stays readable at full width; it just grows into place.
+        gsap.fromTo(frame, { scale: 0.86, borderRadius: 28 }, { scale: 1, borderRadius: 16, ease: "none",
+          scrollTrigger: { trigger: ".reel", start: "top 85%", end: "center 60%", scrub: 0.6 } });
+        reveal(".reel-head > *", { trigger: ".reel" });
+      } else {
+        gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: { trigger: ".reel", start: "top top", end: "+=130%", pin: ".reel-stage", scrub: 0.7, anticipatePin: 1, invalidateOnRefresh: true }
+        })
+          .fromTo(frame, { scale: 0.62, borderRadius: 40 }, {
+            scale: function () { return Math.max(window.innerWidth / frame.offsetWidth, window.innerHeight / frame.offsetHeight) * 1.001; },
+            borderRadius: 0, duration: 0.7
+          }, 0)
+          .to(".reel-head", { y: -120, opacity: 0, duration: 0.35 }, 0)
+          .to({}, { duration: 0.3 });
+      }
 
       /* ---------- CAREER ---------- */
       var items = document.querySelectorAll(".track li");
@@ -471,11 +480,11 @@
           gsap.fromTo(img, { y: -s }, { y: s, ease: "none",
             scrollTrigger: { trigger: f, start: "top bottom", end: "bottom top", scrub: 0.5 } });
         });
-        gsap.from(f.querySelector(".feature-text"), { x: flip ? -90 : 90, opacity: 0, ease: "none",
+        gsap.from(f.querySelector(".feature-text"), { x: c.narrow ? 0 : (flip ? -90 : 90), y: c.narrow ? 40 : 0, opacity: 0, ease: "none",
           scrollTrigger: { trigger: f, start: "top 85%", end: "center 60%", scrub: 0.6 } });
       });
 
-      if (!c.narrow) {
+      if (!c.narrow && window.innerWidth > 640) {
         document.querySelectorAll(".col").forEach(function (col) {
           var s = parseFloat(col.dataset.speed) || 0;
           gsap.fromTo(col, { y: -s }, { y: s, ease: "none",
@@ -520,7 +529,7 @@
       gsap.fromTo(".timeline", { "--tl": 0 }, { "--tl": 1, ease: "none",
         scrollTrigger: { trigger: ".timeline", start: "top 70%", end: "bottom 70%", scrub: 0.4 } });
       document.querySelectorAll(".timeline > li").forEach(function (li) {
-        reveal([li], { trigger: li, start: "top 88%" }, { y: 0, x: 70 });
+        reveal([li], { trigger: li, start: "top 88%" }, c.narrow ? { y: 40 } : { y: 0, x: 70 });
       });
 
       /* ---------- CONTACT ---------- */
@@ -538,6 +547,24 @@
         .from(".contact-lede", { y: 30, opacity: 0, duration: 0.14 }, 0.68)
         .from(".contact-actions", { y: 30, opacity: 0, duration: 0.12 }, 0.78)
         .from(".site-footer", { opacity: 0, duration: 0.1 }, 0.9);
+
+      /* ---------- Portrait tilt (mouse only) ---------- */
+      if (c.fine) {
+        var pf = document.querySelector(".portrait-frame");
+        var portrait = document.querySelector(".portrait");
+        var rx = gsap.quickTo(pf, "rotationX", { duration: 0.6, ease: "power3" });
+        var ry = gsap.quickTo(pf, "rotationY", { duration: 0.6, ease: "power3" });
+        gsap.set(pf, { transformPerspective: 800 });
+        var tiltMove = function (e) {
+          var r = portrait.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * 14);
+          rx(-((e.clientY - r.top) / r.height - 0.5) * 14);
+        };
+        var tiltLeave = function () { rx(0); ry(0); };
+        portrait.addEventListener("pointermove", tiltMove);
+        portrait.addEventListener("pointerleave", tiltLeave);
+        ctx.add(function () { return function () { portrait.removeEventListener("pointermove", tiltMove); portrait.removeEventListener("pointerleave", tiltLeave); }; });
+      }
 
       /* ---------- Magnetic buttons ---------- */
       if (c.fine) {

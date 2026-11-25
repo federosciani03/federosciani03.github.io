@@ -971,3 +971,99 @@ svg.live .d-packet { opacity: .9; }
 
 /* long Spanish words (hiperpersonalización) must fit the poster */
 .poster-body h3 { font-size: clamp(1.3rem, 1.9vw, 2rem); hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+
+/* =========================================================
+   Portrait: a tall framed photo with a living glow and two tags
+   ========================================================= */
+@property --ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.portrait { position: relative; margin: 0; width: clamp(12rem, 23vw, 20rem); aspect-ratio: 4 / 5; }
+.portrait-frame {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden; border-radius: 28px;
+  box-shadow: 0 50px 90px -40px rgba(11, 31, 28, .65), 0 0 0 6px rgba(255, 255, 255, .7);
+  will-change: transform;
+}
+.portrait .portrait-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; border-radius: 0; }
+.portrait-frame::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(14, 124, 111, .32), rgba(14, 124, 111, 0) 42%);
+}
+.portrait-glow {
+  position: absolute; inset: -16px; z-index: 0; border-radius: 40px;
+  background: conic-gradient(from var(--ang), #0e7c6f, #22b8a5, #bfe3dd, #e39a2d, #0e7c6f);
+  filter: blur(22px); opacity: .55;
+}
+.motion .portrait-glow { animation: spin-glow 9s linear infinite; }
+@keyframes spin-glow { to { --ang: 360deg; } }
+.portrait-tag {
+  position: absolute; z-index: 2; white-space: nowrap;
+  padding: .55rem .85rem; border-radius: 999px; font-size: .72rem;
+  background: #fff; color: var(--ink); box-shadow: 0 16px 30px -18px rgba(11, 31, 28, .6);
+}
+.portrait-tag.t1 { left: -14%; bottom: 12%; }
+.portrait-tag.t2 { right: -12%; top: 9%; background: var(--teal); color: #fff; }
+.motion .portrait-tag { animation: bob 4.5s ease-in-out infinite alternate; }
+.motion .portrait-tag.t2 { animation-duration: 5.5s; animation-delay: -2s; }
+.ring { display: none; }
+
+/* Phones: the hero closes on a big centered portrait, then the statement */
+@media (max-width: 700px) {
+  .hero-about { justify-items: center; text-align: center; }
+  .hero-actions { justify-content: center; }
+  .portrait { width: min(62vw, 15rem); }
+  .portrait-tag { font-size: .66rem; padding: .45rem .7rem; }
+  .portrait-tag.t1 { left: -10%; }
+  .portrait-tag.t2 { right: -8%; }
+  .motion .hero-about { align-content: center; justify-items: center; gap: 1.4rem; padding-top: calc(var(--hh) + .25rem); }
+  .motion .portrait { width: min(52vw, 13.5rem); }
+  .statement { font-size: clamp(1.2rem, 5.4vw, 1.5rem); max-width: 22rem; margin-inline: auto; }
+}
+
+/* =========================================================
+   Phones: tighter header, chips inside the screen, an inline
+   showreel and swipeable personal projects
+   ========================================================= */
+@media (max-width: 480px) {
+  .brand { font-size: .8rem; font-stretch: 110%; }
+  .nav { gap: .4rem; }
+  .nav .nav-cta { padding: .42rem .7rem; font-size: .8rem; }
+  .lang button { padding: .38rem .45rem; font-size: .66rem; }
+}
+@media (max-width: 700px) {
+  .motion .chips li { left: min(var(--x), 64%); }
+}
+@media (max-width: 720px) {
+  .motion .reel { padding: clamp(3rem, 12vw, 4.5rem) 0; }
+  .motion .reel-stage { height: auto; min-height: 0; display: block; overflow: visible; }
+  .reel-frame { border-radius: 16px; }
+  .reel-toggle { right: .6rem; bottom: .6rem; padding: .45rem .7rem; font-size: .66rem; }
+}
+@media (max-width: 640px) {
+  .cols {
+    display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * var(--gutter)); padding: .25rem var(--gutter) 1rem; scrollbar-width: none;
+  }
+  .cols::-webkit-scrollbar { display: none; }
+  .col { display: contents; }
+  .shot { flex: none; width: min(74vw, 300px); scroll-snap-align: center; }
+  .shot-art { aspect-ratio: 1 / 1; }
+  .side .more-title { margin-top: 2.5rem; }
+  .minis { margin-bottom: 3.5rem; }
+  .feature { margin-bottom: 4.5rem; }
+}
+
+/* Phones: the language switch shows only the other language; one chip moves off the name */
+@media (max-width: 480px) {
+  .lang { border: 0; }
+  .lang button[aria-pressed="true"] { display: none; }
+  .lang button { border: 1px solid currentColor; border-radius: 999px; padding: .38rem .55rem; }
+  .motion .chips li:nth-child(3) { top: 31% !important; }
+}
+
+/* Nothing that slides in sideways may widen the page on a phone */
+.side, .timeline-sec, .stack-sec { overflow-x: clip; }
+html { overflow-x: clip; }
+
+/* Desktop: portrait and statement centered as one block */
+@media (min-width: 701px) {
+  .motion .hero-about { grid-template-columns: auto minmax(0, 40rem); justify-content: center; }
+}
