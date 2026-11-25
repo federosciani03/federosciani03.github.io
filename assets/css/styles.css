@@ -1067,3 +1067,46 @@ html { overflow-x: clip; }
 @media (min-width: 701px) {
   .motion .hero-about { grid-template-columns: auto minmax(0, 40rem); justify-content: center; }
 }
+
+/* =========================================================
+   No portrait: the statement holds the end of the hero alone
+   ========================================================= */
+.hero-about { grid-template-columns: minmax(0, 1fr) !important; justify-items: center; text-align: center; }
+.hero-copy { max-width: 52rem; }
+.statement { font-size: clamp(1.6rem, 4vw, 3.4rem); max-width: 50rem; margin-inline: auto; }
+.hero-actions { justify-content: center; }
+@media (max-width: 700px) {
+  .statement { font-size: clamp(1.5rem, 7vw, 2rem); max-width: 24rem; }
+}
+
+/* =========================================================
+   Phones: posters ride with the scroll (coverflow), no swiping
+   ========================================================= */
+@media (max-width: 899px) {
+  .hscroll.is-h { height: 100svh; display: flex; flex-direction: column; justify-content: center; margin-top: 0; }
+  .hscroll.is-h .hscroll-track {
+    overflow: visible !important; width: max-content !important; scroll-snap-type: none;
+    padding: 0 calc((100vw - min(76vw, 320px)) / 2) !important; gap: .5rem !important;
+    perspective: 900px;
+  }
+  .hscroll.is-h .poster { width: min(76vw, 320px); }
+  .hscroll.is-h .hscroll-ui { display: flex; margin-top: 1.25rem; }
+}
+
+/* =========================================================
+   Phones: personal projects as a deck dealt by the scroll
+   ========================================================= */
+@media (max-width: 640px) {
+  .cols.is-deck {
+    position: relative; display: block; overflow: visible; height: 100svh;
+    margin: 0 calc(-1 * var(--gutter)); padding: 0;
+  }
+  .cols.is-deck .shot {
+    position: absolute; left: 50%; top: 52%; width: min(84vw, 340px); translate: -50% -50%;
+    background: var(--mist); border-radius: 24px; padding: .7rem .7rem 1.1rem;
+    box-shadow: 0 30px 60px -30px rgba(11, 31, 28, .45), 0 0 0 1px rgba(11, 31, 28, .06);
+    will-change: transform;
+  }
+  .cols.is-deck .shot-art { aspect-ratio: 4 / 3; margin-bottom: .8rem !important; }
+  .cols.is-deck .shot > :not(.shot-art) { padding-inline: .35rem; }
+}

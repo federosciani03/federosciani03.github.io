@@ -354,12 +354,8 @@
         }, 0);
       });
       heroTl
-        // The portrait wipes up out of its frame, the photo settles, the glow lights and the tags pop.
-        .fromTo(".portrait-frame", { clipPath: "inset(100% 0% 0% 0% round 28px)", y: 40 }, { clipPath: "inset(0% 0% 0% 0% round 28px)", y: 0, duration: 0.34 }, 0.2)
-        .fromTo(".portrait-frame img", { scale: 1.35 }, { scale: 1, duration: 0.5 }, 0.2)
-        .fromTo(".portrait-glow", { opacity: 0, scale: 0.7 }, { opacity: 0.55, scale: 1, duration: 0.3 }, 0.3)
-        .fromTo(".portrait-tag", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.1, stagger: 0.06, ease: "back.out(2)" }, 0.46)
-        .from(".hero-copy", { x: c.narrow ? 0 : 60, y: c.narrow ? 30 : 0, opacity: 0, duration: 0.18 }, 0.36);
+        // The statement rises into the space the name leaves.
+        .fromTo(".hero-copy", { y: 80, scale: 0.94, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.22 }, 0.3);
       if (has(words)) heroTl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: 0.06, stagger: 0.38 / words.length }, 0.44);
       heroTl.from(".hero-actions", { y: 30, opacity: 0, duration: 0.1 }, 0.86);
 
@@ -414,11 +410,12 @@
 
       var posters = gsap.utils.toArray(".poster");
       // Posters rise into place as the section arrives.
-      gsap.from(posters, { y: 140, rotate: function (i) { return i % 2 ? 3 : -3; }, opacity: 0, duration: 1.1, ease: "power3.out", stagger: 0.07,
+      if (!c.narrow) gsap.from(posters, { y: 140, rotate: function (i) { return i % 2 ? 3 : -3; }, opacity: 0, duration: 1.1, ease: "power3.out", stagger: 0.07,
         scrollTrigger: { trigger: hs, start: "top 85%", toggleActions: "play none none reverse" } });
 
-      if (c.h) {
-        // A short horizontal ride: three to four posters in view, the rest slide in.
+      if (true) {
+        // Horizontal ride driven by the vertical scroll: three to four posters in view on
+        // wide screens; on phones one at a time, centered, so nobody has to swipe.
         hs.classList.add("is-h");
         var bar = hs.querySelector(".hscroll-bar i");
         var count = hs.querySelector(".hscroll-count b");
@@ -444,12 +441,12 @@
             onEnter: function () { s.classList.add("armed"); }, onLeaveBack: function () { s.classList.remove("armed"); } });
           gsap.fromTo(p.querySelector(".poster-art svg, .poster-video"), { xPercent: 6 }, { xPercent: -6, ease: "none",
             scrollTrigger: { trigger: p, containerAnimation: htween, start: "left right", end: "right left", scrub: true } });
-        });
-      } else {
-        posters.forEach(function (p) {
-          diagramIn(p, { trigger: hs, start: "top 75%" });
-          var s = p.querySelector(".stage");
-          ScrollTrigger.create({ trigger: hs, start: "top 70%", onEnter: function () { s.classList.add("armed"); }, onLeaveBack: function () { s.classList.remove("armed"); } });
+          if (c.narrow) {
+            // Coverflow: the poster in the middle is big and flat, its neighbours turn away.
+            gsap.timeline({ scrollTrigger: { trigger: p, containerAnimation: htween, start: "left right", end: "right left", scrub: true } })
+              .fromTo(p, { scale: 0.8, rotationY: 28, opacity: 0.45 }, { scale: 1, rotationY: 0, opacity: 1, ease: "power1.out", duration: 1 })
+              .to(p, { scale: 0.8, rotationY: -28, opacity: 0.45, ease: "power1.in", duration: 1 });
+          }
         });
       }
 
@@ -496,10 +493,28 @@
         gsap.from(m, { y: 120, rotate: i % 2 ? 3 : -3, opacity: 0, ease: "none",
           scrollTrigger: { trigger: m, start: "top 100%", end: "top 60%", scrub: 0.6 } });
       });
-      document.querySelectorAll(".shot").forEach(function (shot) {
-        reveal([shot], { trigger: shot, start: "top 92%" }, { y: 70 });
-        diagramIn(shot, { trigger: shot, start: "top 80%" });
-      });
+      var shots = gsap.utils.toArray(".shot");
+      if (window.innerWidth <= 640) {
+        // Phones: the projects come as a deck; each scroll deals the next card over the last.
+        var deck = document.querySelector(".cols");
+        deck.classList.add("is-deck");
+        var dealt = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: { trigger: deck, start: "top top", end: function () { return "+=" + (shots.length - 1) * window.innerHeight * 0.6; }, pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true }
+        });
+        shots.forEach(function (s, i) {
+          if (i === 0) return;
+          dealt.fromTo(s, { yPercent: 125, rotate: i % 2 ? 8 : -8 }, { yPercent: 0, rotate: i % 2 ? -2 : 2, duration: 1, ease: "power2.out" })
+            .to(shots[i - 1], { scale: 0.9, yPercent: -6, opacity: 0.35, duration: 1 }, "<");
+        });
+        shots.forEach(function (s) { diagramIn(s, { trigger: deck, start: "top 70%" }); });
+        ctx.add(function () { return function () { deck.classList.remove("is-deck"); }; });
+      } else {
+        shots.forEach(function (shot) {
+          reveal([shot], { trigger: shot, start: "top 92%" }, { y: 70 });
+          diagramIn(shot, { trigger: shot, start: "top 80%" });
+        });
+      }
 
       var pupil = document.querySelector(".d-pupil");
       if (pupil && c.fine) {
@@ -547,24 +562,6 @@
         .from(".contact-lede", { y: 30, opacity: 0, duration: 0.14 }, 0.68)
         .from(".contact-actions", { y: 30, opacity: 0, duration: 0.12 }, 0.78)
         .from(".site-footer", { opacity: 0, duration: 0.1 }, 0.9);
-
-      /* ---------- Portrait tilt (mouse only) ---------- */
-      if (c.fine) {
-        var pf = document.querySelector(".portrait-frame");
-        var portrait = document.querySelector(".portrait");
-        var rx = gsap.quickTo(pf, "rotationX", { duration: 0.6, ease: "power3" });
-        var ry = gsap.quickTo(pf, "rotationY", { duration: 0.6, ease: "power3" });
-        gsap.set(pf, { transformPerspective: 800 });
-        var tiltMove = function (e) {
-          var r = portrait.getBoundingClientRect();
-          ry(((e.clientX - r.left) / r.width - 0.5) * 14);
-          rx(-((e.clientY - r.top) / r.height - 0.5) * 14);
-        };
-        var tiltLeave = function () { rx(0); ry(0); };
-        portrait.addEventListener("pointermove", tiltMove);
-        portrait.addEventListener("pointerleave", tiltLeave);
-        ctx.add(function () { return function () { portrait.removeEventListener("pointermove", tiltMove); portrait.removeEventListener("pointerleave", tiltLeave); }; });
-      }
 
       /* ---------- Magnetic buttons ---------- */
       if (c.fine) {

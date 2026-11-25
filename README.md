@@ -33,7 +33,6 @@ comprimieron con ffmpeg (H.264, sin audio, ~0,5 MB cada uno).
 | Colores y tipografías | `assets/css/styles.css`, variables al principio |
 | Idioma, animaciones | `assets/js/main.js` |
 | CV descargables | `assets/cv/CV-FedericoRosciani-ES.pdf` y `-EN.pdf` |
-| Foto | `assets/img/federico-rosciani.jpg` |
 
 Para agregar un proyecto, copiá un `<article class="card">` de la sección que
 corresponda y cambiá los textos en los dos idiomas.
