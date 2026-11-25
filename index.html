@@ -28,8 +28,11 @@
     // (?motion=0 forces the static version).
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && location.search.indexOf("motion=0") < 0) {
       document.documentElement.classList.add("motion");
-      // Failsafe: if the animation scripts never start, show the plain document.
-      setTimeout(function () { if (!window.__frReady) document.documentElement.classList.remove("motion"); }, 4000);
+      // Failsafe: if the animation scripts failed (the page loaded but they never started),
+      // or nothing happened after 15 s, show the plain document.
+      var frFail = function () { if (!window.__frReady) document.documentElement.classList.remove("motion"); };
+      window.addEventListener("load", function () { setTimeout(frFail, 800); });
+      setTimeout(frFail, 15000);
     }
   </script>
 
