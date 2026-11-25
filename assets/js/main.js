@@ -422,6 +422,7 @@
         hs.querySelector(".hs-total").textContent = String(posters.length);
         var dist = function () { return Math.max(0, hTrack.scrollWidth - window.innerWidth); };
         var seen = function () { return Math.max(1, posters.filter(function (p) { return p.getBoundingClientRect().right < window.innerWidth + 40; }).length); };
+        var startSeen = seen();
         var htween = gsap.to(hTrack, {
           x: function () { return -dist(); }, ease: "none",
           scrollTrigger: {
@@ -429,7 +430,8 @@
             pin: true, scrub: 0.8, anticipatePin: 1, invalidateOnRefresh: true,
             onUpdate: function (self) {
               gsap.set(bar, { scaleX: self.progress });
-              count.textContent = String(seen());
+              // From the scroll position, not the DOM: with scrub the track lags behind the last update.
+              count.textContent = String(Math.min(posters.length, Math.round(startSeen + self.progress * (posters.length - startSeen))));
             }
           }
         });
